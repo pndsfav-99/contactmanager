@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Contact Manager</title>
+</head>
+<body>
+  <h1>Contact Manager</h1>
+
+  <form id="contact-form">
+    <input type="text" id="name" placeholder="Nom" required />
+    <input type="email" id="email" placeholder="Email" required />
+    <input type="text" id="phone" placeholder="Téléphone" required />
+    <button type="submit">Ajouter</button>
+  </form>
+
+  <h2>Liste des contacts</h2>
+  <ul id="contact-list"></ul>
+
+  <script>
+    const API_URL = "http://localhost:3001/contacts";
+
+    async function loadContacts() {
+      const res = await fetch(API_URL);
+      const contacts = await res.json();
+      const list = document.getElementById("contact-list");
+      list.innerHTML = "";
+      contacts.forEach(contact => {
+        const li = document.createElement("li");
+        li.textContent = `${contact.name} - ${contact.email} - ${contact.phone}`;
+        list.appendChild(li);
+      });
+    }
+
+    document.getElementById("contact-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const phone = document.getElementById("phone").value;
+
+      await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, phone })
+      });
+
+      e.target.reset();
+      loadContacts();
+    });
+
+    loadContacts();
+  </script>
+</body>
+</html>
